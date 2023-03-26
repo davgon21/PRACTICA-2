@@ -6,8 +6,8 @@ import random
 from multiprocessing import Lock, Condition, Process
 from multiprocessing import Value
 
-SOUTH = 1
-NORTH = 0
+SOUTH = 0
+NORTH = 1
 
 NCARS = 10
 NPED = 5
@@ -109,10 +109,10 @@ class Monitor():
         
             if self.turno.value == 1:   # En realidad esta condición no es necesaria, pero se deja para comprobar el correcto funcionamiento de la variable turno 
                   if self.esperando_P.value != 0 :
-                      self.turno.value = 0
+                      self.turno.value = 2
                       
                   elif self.esperando_N.value != 0 :
-                      self.turno.value = 2
+                      self.turno.value = 0
                       
                   else :   # Caso en el que no hay nadie esperando
                       self.turno.value = -1
@@ -249,3 +249,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
