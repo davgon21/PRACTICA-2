@@ -22,7 +22,7 @@ class Monitor():
         self.mutex = Lock()
         self.patata = Value('i', 0)
         
-# Definimos variables correspondientes L número de coches de una dirección determinada/peatones que se encuentran en el puente    
+# Definimos variables correspondientes al número de coches de una dirección determinada/peatones que se encuentran en el puente    
         self.coches_norte = Value('i', 0) # número de coches que se dirigen al norte
         self.coches_sur = Value('i', 0) # número de coches que se dirigen al sur
         self.peatones = Value('i', 0) # número de peatones
