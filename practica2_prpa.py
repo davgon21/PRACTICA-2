@@ -6,8 +6,8 @@ import random
 from multiprocessing import Lock, Condition, Process
 from multiprocessing import Value
 
-SOUTH = 1
-NORTH = 0
+SOUTH = 0
+NORTH = 1
 
 NCARS = 10
 NPED = 5
