@@ -32,7 +32,7 @@ class Monitor():
         self.esperando_S = Value('i', 0)
         self.esperando_P = Value('i', 0)
         
-# Definimos las variables condición, que habrá una por cada proceso
+# Definimos las variables condición
         self.N_puede_pasar = Condition(self.mutex)
         self.S_puede_pasar = Condition(self.mutex)
         self.P_puede_pasar = Condition(self.mutex)
