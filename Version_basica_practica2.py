@@ -11,8 +11,7 @@ NORTH = 0
 
 NCARS = 30
 NPED = 10
-TIME_CARS_NORTH = 0.5  # a new car enters each 0.5s
-TIME_CARS_SOUTH = 0.5  # a new car enters each 0.5s
+TIME_CARS = 0.5  # a new car enters each 0.5s
 TIME_PED = 5 # a new pedestrian enters each 5s
 TIME_IN_BRIDGE_CARS = (1, 0.5) # normal 1s, 0.5s
 TIME_IN_BRIDGE_PEDESTRIAN = (30, 10) # normal 1s, 0.5s
@@ -154,7 +153,7 @@ def pedestrian(pid: int, monitor: Monitor) -> None:
 
 
 
-def gen_pedestrian(monitor: Monitor) -> None:
+def gen_pedestrian(monitor: Monitor) -> None :
     pid = 0
     plst = []
     for _ in range(NPED):
@@ -167,29 +166,27 @@ def gen_pedestrian(monitor: Monitor) -> None:
     for p in plst:
         p.join()
 
-def gen_cars(direction: int, time_cars, monitor: Monitor) -> None:
+def gen_cars(monitor: Monitor) -> None :
     cid = 0
     plst = []
     for _ in range(NCARS):
+        direction = SOUTH if random.randint(0,1) == 0  else NORTH
         cid += 1
         p = Process(target=car, args=(cid, direction, monitor))
         p.start()
         plst.append(p)
-        time.sleep(random.expovariate(1/time_cars))
+        time.sleep(random.expovariate(1/TIME_CARS ))
 
     for p in plst:
         p.join()
 
 def main():
     monitor = Monitor()
-    gcars_north = Process(target=gen_cars, args=(NORTH, TIME_CARS_NORTH, monitor))
-    gcars_south = Process(target=gen_cars, args=(SOUTH, TIME_CARS_SOUTH, monitor))
+    gcars = Process(target=gen_cars, args=(monitor,))
     gped = Process(target=gen_pedestrian, args=(monitor,))
-    gcars_north.start()
-    gcars_south.start()
+    gcars.start()
     gped.start()
-    gcars_north.join()
-    gcars_south.join()
+    gcars.join()
     gped.join()
 
 
