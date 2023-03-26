@@ -227,7 +227,7 @@ def gen_cars(monitor: Monitor) -> None:
     cid = 0
     plst = []
     for _ in range(NCARS):
-        direction = NORTH if random.randint(0,1)==1  else SOUTH
+        direction = SOUTH if random.randint(0,1)==0  else NORTH
         cid += 1
         p = Process(target=car, args=(cid, direction, monitor))
         p.start()
