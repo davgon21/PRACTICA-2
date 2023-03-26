@@ -9,10 +9,9 @@ from multiprocessing import Value
 SOUTH = 1
 NORTH = 0
 
-NCARS = 30
-NPED = 10
-TIME_CARS_NORTH = 0.5  # a new car enters each 0.5s
-TIME_CARS_SOUTH = 0.5  # a new car enters each 0.5s
+NCARS = 10
+NPED = 5
+TIME_CARS = 0.5  # a new car enters each 0.5s
 TIME_PED = 5 # a new pedestrian enters each 5s
 TIME_IN_BRIDGE_CARS = (1, 0.5) # normal 1s, 0.5s
 TIME_IN_BRIDGE_PEDESTRIAN = (30, 10) # normal 1s, 0.5s
@@ -57,16 +56,16 @@ class Monitor():
 # A continuación definimos los métodos que determinen si se permite el paso
     
     def coches_N_pueden_pasar(self) :
-        return (self.no_hay_coches_S() and self.no_hay_peatones() and \
-        	   ((self.esperando_P.value <= 4 and self.esperando_S.value <= 10) or self.turno == 0 or self.turno == -1))
+        return (self.no_hay_coches_S() and self.no_hay_peatones() and 
+        	   ((self.esperando_P.value <= 4 and self.esperando_S.value <= 4) or self.turno == 0 or self.turno == -1))
     
     def coches_S_pueden_pasar(self) :
-        return (self.no_hay_coches_N() and self.no_hay_peatones() and \
-        	   ((self.esperando_N.value <= 4 and self.esperando_P.value <= 10) or self.turno == 1 or self.turno == -1))
+        return (self.no_hay_coches_N() and self.no_hay_peatones() and 
+        	   ((self.esperando_N.value <= 4 and self.esperando_P.value <= 4) or self.turno == 1 or self.turno == -1))
         
     def peatones_pueden_pasar(self) :
-        return (self.no_hay_coches_S() and self.no_hay_coches_N() and \
-        	   ((self.esperando_N.value <= 4 and self.esperando_S.value <= 10) or self.turno == 2 or self.turno == -1))
+        return (self.no_hay_coches_S() and self.no_hay_coches_N() and 
+        	   ((self.esperando_N.value <= 4 and self.esperando_S.value <= 4) or self.turno == 2 or self.turno == -1))
     
     
    
@@ -81,9 +80,7 @@ class Monitor():
              self.esperando_S.value += 1 # Acumulamos un coche que esta esperando a pasar y se dirige al sur
              self.S_puede_pasar.wait_for(self.coches_S_pueden_pasar) #Comprobamos si el coche puede pasar el puente  
              self.esperando_S.value -= 1  # Si se cumple lo anterior entonces el número de coches esperando y que se dirigen al sur disminuye 1
-
              self.turno.value = 1             
-                
              self.coches_sur.value += 1 # le sumamos 1 a los coches acumulados en el puente
              
              
@@ -91,11 +88,8 @@ class Monitor():
             
              self.esperando_N.value += 1 # Acumulamos un coche que esta esperando a pasar y se dirige al sur
              self.N_puede_pasar.wait_for(self.coches_N_pueden_pasar) #Comprobamos si el coche puede pasar el puente  
-             self.esperando_N.value -= 1  # Si se cumple lo anterior entonces el número de coches esperando y que se dirigen al sur disminuye 1
-
-            
+             self.esperando_N.value -= 1  # Si se cumple lo anterior entonces el número de coches esperando y que se dirigen al sur disminuye 1            
              self.turno.value = 0             
-                
              self.coches_norte.value += 1 # le sumamos 1 a los coches acumulados en el puente            
                           
         self.mutex.release()
@@ -114,18 +108,18 @@ class Monitor():
 # Ahora, teniendo el cuenta que si el turno actual es de los coches del norte, entonces veamos a quien hay que ceder el turno
         
             if self.turno.value == 1:   # En realidad esta condición no es necesaria, pero se deja para comprobar el correcto funcionamiento de la variable turno 
-                  if self.esperando_N.value != 0 :
+                  if self.esperando_P.value != 0 :
                       self.turno.value = 0
                       
-                  elif self.esperando_P.value != 0 :
+                  elif self.esperando_N.value != 0 :
                       self.turno.value = 2
                       
                   else :   # Caso en el que no hay nadie esperando
                       self.turno.value = -1
                       
             if self.coches_sur.value == 0 :
-                self.N_puede_pasar.notify_all()
-                self.P_puede_pasar.notify_all()     
+                self.P_puede_pasar.notify_all()
+                self.N_puede_pasar.notify_all()     
             
         else: 
             
@@ -229,29 +223,27 @@ def gen_pedestrian(monitor: Monitor) -> None:
     for p in plst:
         p.join()
 
-def gen_cars(direction: int, time_cars, monitor: Monitor) -> None:
+def gen_cars(monitor: Monitor) -> None:
     cid = 0
     plst = []
     for _ in range(NCARS):
+        direction = NORTH if random.randint(0,1)==1  else SOUTH
         cid += 1
         p = Process(target=car, args=(cid, direction, monitor))
         p.start()
         plst.append(p)
-        time.sleep(random.expovariate(1/time_cars))
+        time.sleep(random.expovariate(1/TIME_CARS))
 
     for p in plst:
         p.join()
 
 def main():
     monitor = Monitor()
-    gcars_north = Process(target=gen_cars, args=(NORTH, TIME_CARS_NORTH, monitor))
-    gcars_south = Process(target=gen_cars, args=(SOUTH, TIME_CARS_SOUTH, monitor))
+    gcars= Process(target=gen_cars, args=(monitor,))
     gped = Process(target=gen_pedestrian, args=(monitor,))
-    gcars_north.start()
-    gcars_south.start()
+    gcars.start()
     gped.start()
-    gcars_north.join()
-    gcars_south.join()
+    gcars.join()
     gped.join()
 
 
