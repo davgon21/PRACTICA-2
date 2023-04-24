@@ -7,7 +7,7 @@ Esta versión contiene la solución inicial que únicamente garantiza la segurid
 
 2) La versión final
 
-Esta versión es la que se considera "correcta".Mediante la incorporación de las variables wait que se refieren al número de coches (N/S) o peatones que se encuetran esperando a entrar en el puente. Si no consideramos más modificaciones entonces se soluciona la inanición pero podría producirse deadlock (situación donde podría darse deadlock explicado en el archivo pdf).Para solucionar esto último incorporamos al código una variable "turno" que se encarga de controlar quien tiene acceso al puente.
+Esta versión es la que se considera "correcta". Mediante la incorporación de las variables wait que se refieren al número de coches (N/S) o peatones que se encuetran esperando a entrar en el puente se soluciona la inanición pero podría producirse deadlock (situación donde podría darse deadlock explicado en el archivo pdf).Para solucionar esto último incorporamos al código una variable "turno" que se encarga de controlar quien tiene acceso al puente.
 
 4) La demostración de que la solución final no genera problemas.
 
