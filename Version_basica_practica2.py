@@ -86,7 +86,7 @@ class Monitor():
         if direction == SOUTH :
             self.coches_sur.value -= 1 #Al salir del puente el numero de coches en dicho puente disminuye en 1
 
-            if self.coches_sur.value == 0 :
+            if self.coches_sur.value == 0 : # En el momento que no quedan coches en dirección sur en el puente notificamos al resto en el orden correspondiente que ya pueden pasar
                 self.N_puede_pasar.notify_all()
                 self.P_puede_pasar.notify_all()     
             
@@ -94,7 +94,7 @@ class Monitor():
             
             self.coches_norte.value -= 1 #Al salir del puente el numero de coches en dicho puente disminuye en 1
                       
-            if self.coches_norte.value == 0 :
+            if self.coches_norte.value == 0 : # En el momento que no quedan coches en dirección norte en el puente notificamos al resto en el orden correspondiente que ya pueden pasar
                 self.S_puede_pasar.notify_all()
                 self.P_puede_pasar.notify_all() 
 
@@ -112,7 +112,7 @@ class Monitor():
         self.patata.value += 1
         self.peatones.value -= 1
         
-        if self.peatones == 0 :
+        if self.peatones == 0 : # En el momento que no quedan peatones en el puente notificamos al resto en el orden correspondiente que ya pueden pasar
             self.N_puede_pasar.notify_all()
             self.S_puede_pasar.notify_all() 
                 
@@ -121,6 +121,8 @@ class Monitor():
     def __repr__(self) -> str:
         return f'Monitor: {self.patata.value}'
 
+    # Ahora definimos los tiempos que se tarda en cruzar el puente en cada caso
+    
 def delay_car_north(factor = 4) -> None:
     time.sleep(random.random()/factor)
 
