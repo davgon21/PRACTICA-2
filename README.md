@@ -3,7 +3,7 @@
 Para esta práctica se aportan 3 archivos :
 1) La versión básica
 
-Esta versión contiene la solución inicial que únicamente garantiza la seguridad del puente. Esto se consigue mediante el uso de las variables condición, tomando considerando la condición de que un coche que se dirige en una dirección no puede acceder al puente si hay peatones o coches que se dirigen en la otra dirección. El problema de esta solución es que puede generarse inanición y/o deadlock.
+Esta versión contiene la solución inicial que únicamente garantiza la seguridad del puente. Esto se consigue mediante el uso de las variables condición, considerando la condición de que un coche que se dirige en una dirección no puede acceder al puente si hay peatones o coches que se dirigen en la otra dirección. El problema de esta solución es que puede generarse inanición y/o deadlock.
 
 2) La versión final
 
