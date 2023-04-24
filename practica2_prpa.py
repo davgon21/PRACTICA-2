@@ -32,7 +32,7 @@ class Monitor():
         self.esperando_S = Value('i', 0)
         self.esperando_P = Value('i', 0)
         
-# Definimos las variables condición
+# Definimos las variables condición 
         self.N_puede_pasar = Condition(self.mutex)
         self.S_puede_pasar = Condition(self.mutex)
         self.P_puede_pasar = Condition(self.mutex)
@@ -103,7 +103,7 @@ class Monitor():
         
 # Volvemos a distinguir en función de la dirección
         if direction == SOUTH :
-            self.coches_sur.value -= 1 #Al salir del puente el numero de coches en dicho puente disminuye en 1
+            self.coches_sur.value -= 1 #Al salir del puente el número de coches en dicho puente disminuye en 1
              
 # Ahora, teniendo el cuenta que si el turno actual es de los coches del norte, entonces veamos a quien hay que ceder el turno
         
@@ -117,8 +117,8 @@ class Monitor():
                   else :   # Caso en el que no hay nadie esperando
                       self.turno.value = -1
                       
-            if self.coches_sur.value == 0 :
-                self.P_puede_pasar.notify_all()
+            if self.coches_sur.value == 0 : # En el momento que no quedan coches en dirección sur en el puente notificamos al resto en el orden correspondiente que ya pueden pasar
+                self.P_puede_pasar.notify_all()  
                 self.N_puede_pasar.notify_all()     
             
         else: 
@@ -137,7 +137,7 @@ class Monitor():
                   else :   # Caso en el que no hay nadie esperando
                       self.turno.value = -1
                       
-            if self.coches_norte.value == 0 :
+            if self.coches_norte.value == 0 : # En el momento que no quedan coches en dirección norte en el puente notificamos al resto en el orden correspondiente que ya pueden pasar
                 self.S_puede_pasar.notify_all()
                 self.P_puede_pasar.notify_all() 
 
@@ -146,18 +146,20 @@ class Monitor():
     def wants_enter_pedestrian(self) -> None:
         self.mutex.acquire()
         self.patata.value += 1
-        self.esperando_P.value += 1
-        self.P_puede_pasar.wait_for(self.peatones_pueden_pasar)
-        self.esperando_P.value -= 1
-        self.turno.value = 2
-        self.peatones.value += 1
+        self.esperando_P.value += 1 # Acumulamos un peaton que esta esperando a pasar
+        self.P_puede_pasar.wait_for(self.peatones_pueden_pasar) #Comprobamos si el peaton puede pasar el puente  
+        self.esperando_P.value -= 1 # Si se cumple lo anterior entonces el número de coches esperando y que se dirigen al sur disminuye 1    
+        self.turno.value = 2 # Cede el turno a los peatones
+        self.peatones.value += 1 # le sumamos 1 a los peatones acumulados en el puente
         self.mutex.release()
 
     def leaves_pedestrian(self) -> None:
         self.mutex.acquire()
         self.patata.value += 1
-        self.peatones.value -= 1
-        
+        self.peatones.value -= 1 #Al salir del puente el número de peatones en dicho puente disminuye en 1
+ 
+# Ahora, teniendo el cuenta que si el turno actual es de los peatones, entonces veamos a quien hay que ceder el turno
+
         if self.turno.value == 0 :
             
             if self.esperando_N.value != 0 :
@@ -169,7 +171,7 @@ class Monitor():
             else :
                 self.turno.value = -1
         
-        if self.peatones == 0 :
+        if self.peatones == 0 : # En el momento que no quedan peatones en el puente notificamos al resto en el orden correspondiente que ya pueden pasar
             self.N_puede_pasar.notify_all()
             self.S_puede_pasar.notify_all() 
                 
@@ -178,6 +180,8 @@ class Monitor():
     def __repr__(self) -> str:
         return f'Monitor: {self.patata.value}'
 
+    # Ahora definimos los tiempos que tardan en cruzar el puente en cada caso
+    
 def delay_car_north(factor = 4) -> None:
     time.sleep(random.random()/factor)
 
